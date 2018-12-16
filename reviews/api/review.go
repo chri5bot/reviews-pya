@@ -93,7 +93,7 @@ func (a *API) DeleteReview(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, "Review Deleted")
+	c.JSON(http.StatusNoContent, nil)
 }
 
 // GetReview retrieve a review
