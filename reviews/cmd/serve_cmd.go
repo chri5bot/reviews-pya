@@ -3,8 +3,8 @@ package cmd
 import (
 	"log"
 
-	"github.com/chri5bot/reviews-pya/services/reviews/api"
-	"github.com/chri5bot/reviews-pya/services/reviews/conf"
+	"github.com/chri5bot/reviews-pya/reviews/api"
+	"github.com/chri5bot/reviews-pya/reviews/conf"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/spf13/cobra"

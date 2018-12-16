@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/chri5bot/reviews-pya/services/reviews/models"
+	"github.com/chri5bot/reviews-pya/reviews/models"
 	"github.com/gin-gonic/gin"
 	"github.com/gofrs/uuid"
 )
