@@ -51,7 +51,7 @@ func (a *API) CreateReview(c *gin.Context) {
 
 	i, err := strconv.ParseUint(c.Param("purchaseID"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Error(err)
 		return
 	}
 
@@ -69,7 +69,7 @@ func (a *API) CreateReview(c *gin.Context) {
 		Status:     models.ApprovedStatus,
 	})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Error(err)
 		return
 	}
 
@@ -79,4 +79,9 @@ func (a *API) CreateReview(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, review)
+}
+
+// DeleteReview deletes a review
+func (a *API) DeleteReview(c *gin.Context) {
+
 }
