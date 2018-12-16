@@ -49,19 +49,19 @@ func (a *API) CreateReview(c *gin.Context) {
 		return
 	}
 
-	pur, err := strconv.ParseUint(c.Param("purchaseID"), 10, 64)
+	purchaseID, err := strconv.ParseUint(c.Param("purchaseID"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "parsing purchase id"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Parsing purchase id"})
 		return
 	}
 
-	if result := a.db.Where("purchase_id = ?", pur).First(&models.Review{}); !result.RecordNotFound() {
+	if result := a.db.Where("purchase_id = ?", purchaseID).First(&models.Review{}); !result.RecordNotFound() {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Unique score per purchase"})
 		return
 	}
 
 	review, err := models.NewReview(&models.NewReviewConfig{
-		PurchaseID: pur,
+		PurchaseID: purchaseID,
 		UserID:     body.UserID,
 		StoreID:    body.StoreID,
 		Opinion:    body.Opinion,
@@ -82,9 +82,7 @@ func (a *API) CreateReview(c *gin.Context) {
 
 // DeleteReview deletes a review
 func (a *API) DeleteReview(c *gin.Context) {
-	reviewID := c.Param("reviewID")
-
-	ID, err := uuid.FromString(reviewID)
+	ID, err := uuid.FromString(c.Param("reviewID"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -102,12 +100,11 @@ func (a *API) DeleteReview(c *gin.Context) {
 func (a *API) GetReview(c *gin.Context) {
 	pur, err := strconv.ParseUint(c.Param("purchaseID"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "parsing purchase id"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Parsing purchase id"})
 		return
 	}
 
 	var review models.Review
-
 	if result := a.db.Where("purchase_id = ?", pur).First(&review); result.Error != nil {
 		c.Error(result.Error)
 		return
@@ -118,5 +115,33 @@ func (a *API) GetReview(c *gin.Context) {
 
 // ListReviews retrieves all reviews
 func (a *API) ListReviews(c *gin.Context) {
+	storeID, err := uuid.FromString(c.Param("storeID"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
+	query := a.db
+
+	start := c.Query("start")
+	if start != "" {
+		query = query.Where("updated_at >= ?", start)
+	}
+
+	end := c.Query("end")
+	if end != "" {
+		query = query.Where("updated_at <= ?", end)
+	}
+
+	reviews := make([]*models.Review, 0)
+	if result := query.Where("store_id = ?", storeID).Find(&reviews); result.Error != nil {
+		if result.RecordNotFound() {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Record not found"})
+			return
+		}
+		c.Error(result.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, reviews)
 }
