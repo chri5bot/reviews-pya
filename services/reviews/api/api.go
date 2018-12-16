@@ -38,6 +38,8 @@ func NewAPI(db *gorm.DB, config *conf.Configuration) *API {
 
 	api.handler = r
 
+	api.initRoutes()
+
 	return api
 }
 
