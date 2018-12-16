@@ -1,0 +1,146 @@
+swagger: "2.0"
+info:
+  description: "Descripcion del api"
+  version: "1.0.0"
+  title: "Reviews Pya"
+  contact:
+    email: "christiantorresdev@gmail.com"
+tags:
+- name: "review"
+  description: "Review Service"
+schemes:
+- "http"
+paths:
+  /stores/{storeID}/reviews:
+    get:
+      tags:
+        - "review"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "storeID"
+        in: "path"
+        description: "ID of store"
+        required: true
+        type: "string"
+        format: "uuid"
+      - name: "start"
+        in: "query"
+        description: "start date filter"
+        required: false
+        type: "string"
+        format: "string"
+      - name: "end"
+        in: "query"
+        description: "end date filter"
+        required: false
+        type: "string"
+        format: "uuid"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Review"
+  /purchases/{purchaseID}/reviews:
+    get:
+      tags:
+        - "review"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "purchaseID"
+        in: "path"
+        description: "ID of purchase"
+        required: true
+        type: "integer"
+        format: "uint64"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Review"
+    post:
+      tags:
+        - "review"
+      produces:
+        - "application/json"
+      parameters:
+      - name: "purchaseID"
+        in: "path"
+        description: "ID of purchase"
+        required: true
+        type: "string"
+        format: "uuid"
+      - in: "body"
+        name: "body"
+        description: "Created review object"
+        required: true
+        schema:
+          $ref: "#/definitions/ReviewBody"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Review"
+  /reviews/{reviewID}:
+    delete:
+      tags:
+        - "review"
+      parameters:
+      - name: "reviewID"
+        in: "path"
+        description: "ID of review"
+        required: true
+        type: "string"
+        format: "uuid"
+      responses:
+        200:
+          description: OK
+definitions:
+  Review:
+    type: "object"
+    properties:
+      ID:
+        type: "string"
+        format: "uuid"
+      UserID:
+        type: "string"
+        format: "uuid"
+      StoreID:
+        type: "string"
+        format: "uuid"
+      PurchaseID:
+        type: "integer"
+        format: "uint64"
+      Score:
+        type: "integer"
+        format: "uint64"
+      Opinion:
+        type: "string"
+        format: "string"
+      CreatedAt:
+        type: "string"
+        format: "date-time"
+      UpdatedAt:
+        type: "string"
+        format: "date-time"
+  ReviewBody:
+    type: "object"
+    properties:
+      user_id:
+        type: "string"
+        format: "uuid"
+      store_id:
+        type: "string"
+        format: "uuid"
+      score:
+        type: "integer"
+        format: "uint64"
+      opinion:
+        type: "string"
+        format: "string"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"

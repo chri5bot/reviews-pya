@@ -136,7 +136,7 @@ func (a *API) ListReviews(c *gin.Context) {
 	reviews := make([]*models.Review, 0)
 	if result := query.Where("store_id = ?", storeID).Find(&reviews); result.Error != nil {
 		if result.RecordNotFound() {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Record not found"})
+			c.JSON(http.StatusNotFound, gin.H{"error": "Records not found"})
 			return
 		}
 		c.Error(result.Error)
