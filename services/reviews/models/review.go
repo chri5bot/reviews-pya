@@ -6,6 +6,12 @@ import (
 	"github.com/gofrs/uuid"
 )
 
+// ApprovedStatus Order Status
+const ApprovedStatus = "approved"
+
+// RejectedStatus Order Status
+const RejectedStatus = "rejected"
+
 // Review model
 type Review struct {
 	ID         uuid.UUID  `json:"id"`
@@ -13,7 +19,7 @@ type Review struct {
 	StoreID    uuid.UUID  `json:"store_id"`
 	PurchaseID uint64     `json:"purchase_id"`
 	Score      uint64     `json:"score"`
-	Opinion    string     `json:"review"`
+	Opinion    string     `json:"opinion"`
 	Status     string     `json:"status"`
 	CreatedAt  time.Time  `json:"created_at"`
 	UpdatedAt  time.Time  `json:"updated_at"`
