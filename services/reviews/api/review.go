@@ -24,9 +24,39 @@ func (a *API) CreateReview(c *gin.Context) {
 		return
 	}
 
+	if body.UserID == (uuid.UUID{}) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "The user is required"})
+		return
+	}
+
+	if body.StoreID == (uuid.UUID{}) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "The store is required"})
+		return
+	}
+
+	if body.Score == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "The score is required"})
+		return
+	}
+
+	if body.Score > 5 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "The score must be between 1 and 5"})
+		return
+	}
+
+	if body.Opinion == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "The opinion is required"})
+		return
+	}
+
 	i, err := strconv.ParseUint(c.Param("purchaseID"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if result := a.db.Where("purchase_id = ? AND status = ?", i, models.ApprovedStatus).First(&models.Review{}); !result.RecordNotFound() {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Unique score per purchase"})
 		return
 	}
 
