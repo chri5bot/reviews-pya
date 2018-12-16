@@ -49,24 +49,23 @@ func (a *API) CreateReview(c *gin.Context) {
 		return
 	}
 
-	i, err := strconv.ParseUint(c.Param("purchaseID"), 10, 64)
+	pur, err := strconv.ParseUint(c.Param("purchaseID"), 10, 64)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "parsing purchase id"})
 		return
 	}
 
-	if result := a.db.Where("purchase_id = ? AND status = ?", i, models.ApprovedStatus).First(&models.Review{}); !result.RecordNotFound() {
+	if result := a.db.Where("purchase_id = ?", pur).First(&models.Review{}); !result.RecordNotFound() {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Unique score per purchase"})
 		return
 	}
 
 	review, err := models.NewReview(&models.NewReviewConfig{
-		PurchaseID: i,
+		PurchaseID: pur,
 		UserID:     body.UserID,
 		StoreID:    body.StoreID,
 		Opinion:    body.Opinion,
 		Score:      body.Score,
-		Status:     models.ApprovedStatus,
 	})
 	if err != nil {
 		c.Error(err)
@@ -83,5 +82,41 @@ func (a *API) CreateReview(c *gin.Context) {
 
 // DeleteReview deletes a review
 func (a *API) DeleteReview(c *gin.Context) {
+	reviewID := c.Param("reviewID")
+
+	ID, err := uuid.FromString(reviewID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if result := a.db.Where("id = ?", ID).Delete(&models.Review{}); result.Error != nil {
+		c.Error(result.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, "Review Deleted")
+}
+
+// GetReview retrieve a review
+func (a *API) GetReview(c *gin.Context) {
+	pur, err := strconv.ParseUint(c.Param("purchaseID"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "parsing purchase id"})
+		return
+	}
+
+	var review models.Review
+
+	if result := a.db.Where("purchase_id = ?", pur).First(&review); result.Error != nil {
+		c.Error(result.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, review)
+}
+
+// ListReviews retrieves all reviews
+func (a *API) ListReviews(c *gin.Context) {
 
 }

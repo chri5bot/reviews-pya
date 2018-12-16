@@ -6,12 +6,6 @@ import (
 	"github.com/gofrs/uuid"
 )
 
-// ApprovedStatus Order Status
-const ApprovedStatus = "approved"
-
-// RejectedStatus Order Status
-const RejectedStatus = "rejected"
-
 // Review model
 type Review struct {
 	ID         uuid.UUID  `json:"id"`
@@ -20,7 +14,6 @@ type Review struct {
 	PurchaseID uint64     `json:"purchase_id"`
 	Score      uint64     `json:"score"`
 	Opinion    string     `json:"opinion"`
-	Status     string     `json:"status"`
 	CreatedAt  time.Time  `json:"created_at"`
 	UpdatedAt  time.Time  `json:"updated_at"`
 	DeletedAt  *time.Time `json:"-"`
@@ -50,6 +43,5 @@ func NewReview(config *NewReviewConfig) (*Review, error) {
 		PurchaseID: config.PurchaseID,
 		Score:      config.Score,
 		Opinion:    config.Opinion,
-		Status:     config.Status,
 	}, nil
 }
