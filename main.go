@@ -1,6 +1,6 @@
 package main
 
-import "github.com/chri5bot/reviews-pya/reviews/cmd"
+import "github.com/chri5bot/reviews-pya/cmd"
 
 func main() {
 	cmd.Execute()

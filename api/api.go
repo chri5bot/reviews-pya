@@ -9,7 +9,7 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/chri5bot/reviews-pya/reviews/conf"
+	"github.com/chri5bot/reviews-pya/conf"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 )
