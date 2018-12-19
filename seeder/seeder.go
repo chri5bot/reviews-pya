@@ -3,6 +3,7 @@ package seeder
 import (
 	"log"
 
+	"github.com/chri5bot/reviews-pya/seeder/defaults"
 	"github.com/jinzhu/gorm"
 )
 
@@ -20,7 +21,17 @@ func NewSeeder(db *gorm.DB) *Seeder {
 
 // Run Start database seeds.
 func (s *Seeder) Run() error {
-	log.Println("Generating brands...")
+	log.Println("Generating reviews...")
+	// TODO: Generate and Insert Variation Options
+
+	log.Println("Inserting reviews...")
+	log.Println("Reviews... ", len(defaults.Reviews))
+
+	for _, r := range defaults.Reviews {
+		if err := s.DB.Create(&r).Error; err != nil {
+			return err
+		}
+	}
 
 	return nil
 }

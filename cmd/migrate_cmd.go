@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/chri5bot/reviews-pya/conf"
+	"github.com/chri5bot/reviews-pya/seeder"
 	migrator "github.com/golang-migrate/migrate"
 	"github.com/jinzhu/gorm"
 	"github.com/spf13/cobra"
@@ -13,7 +14,7 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(migrateCmd, dropCmd)
+	rootCmd.AddCommand(migrateCmd, dropCmd, seedCmd)
 }
 
 var migrateCmd = &cobra.Command{
@@ -34,13 +35,20 @@ var dropCmd = &cobra.Command{
 	},
 }
 
+var seedCmd = &cobra.Command{
+	Use:   "db:seed",
+	Short: "Seeding database.",
+	Long:  "Seeding database.",
+	Run: func(cmd *cobra.Command, args []string) {
+		seed()
+	},
+}
+
 func migrate() {
 
 	config, err := conf.LoadConfig(configFile)
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %+v", err)
-		return
-
 	}
 
 	db, err := gorm.Open("postgres", config.DB.URL)
@@ -69,8 +77,6 @@ func drop() {
 	config, err := conf.LoadConfig(configFile)
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %+v", err)
-		return
-
 	}
 
 	db, err := gorm.Open("postgres", config.DB.URL)
@@ -93,6 +99,29 @@ func drop() {
 	}
 
 	log.Println("Drop finished.")
+}
+
+func seed() {
+	config, err := conf.LoadConfig(configFile)
+	if err != nil {
+		log.Fatalf("Failed to load configuration: %+v", err)
+	}
+
+	db, err := gorm.Open("postgres", config.DB.URL)
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %+v", err)
+	}
+	defer db.Close()
+
+	log.Println("Seeding...")
+
+	s := seeder.NewSeeder(db)
+	err = s.Run()
+	if err != nil {
+		log.Fatalf("Error seeding database: %+v", err)
+	}
+
+	log.Println("Seed finished.")
 }
 
 // NewMigrator create a new instance of database with our custom config
