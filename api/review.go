@@ -7,6 +7,7 @@ import (
 	"github.com/chri5bot/reviews-pya/models"
 	"github.com/gin-gonic/gin"
 	"github.com/gofrs/uuid"
+	"github.com/jinzhu/gorm"
 )
 
 type reviewBody struct {
@@ -121,17 +122,7 @@ func (a *API) ListReviews(c *gin.Context) {
 		return
 	}
 
-	query := a.db
-
-	start := c.Query("start")
-	if start != "" {
-		query = query.Where("updated_at >= ?", start)
-	}
-
-	end := c.Query("end")
-	if end != "" {
-		query = query.Where("updated_at <= ?", end)
-	}
+	query := applyReviewsFilters(a.db, c)
 
 	reviews := make([]*models.Review, 0)
 	if result := query.Where("store_id = ?", storeID).Find(&reviews); result.Error != nil {
@@ -144,4 +135,20 @@ func (a *API) ListReviews(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, reviews)
+}
+
+func applyReviewsFilters(query *gorm.DB, c *gin.Context) *gorm.DB {
+
+	// filter by date
+	if created := c.QueryMap("created"); len(created) != 0 {
+		if lt, ok := created["lt"]; ok {
+			query = query.Where("created_at < ?", lt)
+		}
+
+		if gt, ok := created["gt"]; ok {
+			query = query.Where("created_at > ?", gt)
+		}
+	}
+
+	return query
 }
