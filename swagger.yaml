@@ -25,15 +25,15 @@ paths:
         required: true
         type: "string"
         format: "uuid"
-      - name: "start"
+      - name: "created[lt]"
         in: "query"
-        description: "start date filter"
+        description: "created lower than date"
         required: false
         type: "string"
         format: "date"
-      - name: "end"
+      - name: "created[gt]"
         in: "query"
-        description: "end date filter"
+        description: "created greater than date"
         required: false
         type: "string"
         format: "date"
